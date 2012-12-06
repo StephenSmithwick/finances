@@ -14,7 +14,7 @@ import java.util.Date
 object Application extends Controller {
 
   def index = Action {
-    Redirect("/transactions")
+    Redirect(routes.TransactionsController.index)
   }
  
 }

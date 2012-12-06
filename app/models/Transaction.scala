@@ -20,4 +20,12 @@ case class Transaction (
 object Transaction extends ModelCompanion[Transaction, ObjectId] {
   val collection = mongoCollection("transactions")
   val dao = new SalatDAO[Transaction, ObjectId](collection = collection) {}
+  
+  def findTransactionsForAccount(account: String): Iterator[Transaction] = 
+    findAll.filter(transaction => transaction.account == account)
+    
+  override def save(transaction: Transaction) = {
+    Account.ensureAccountExists(transaction.account)
+    super.save(transaction)
+  }
 }

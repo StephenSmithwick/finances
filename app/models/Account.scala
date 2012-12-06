@@ -16,4 +16,10 @@ case class Account (
 object Account extends ModelCompanion[Account, ObjectId] {
   val collection = mongoCollection("accounts")
   val dao = new SalatDAO[Account, ObjectId](collection = collection) {}
+  
+  def ensureAccountExists(account: String) = {
+    val accounts = Account.findAll
+    if( ! accounts.exists(_.name == account) ) 
+      Account.save(Account(new ObjectId, account))
+  }
 }

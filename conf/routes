@@ -3,12 +3,12 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                                    controllers.Application.index
 
-GET     /transactions               controllers.TransactionsController.index
-GET     /transactions/:account      controllers.TransactionsController.account(account)
-POST    /transactions               controllers.TransactionsController.post
-POST    /transactions/:account      controllers.TransactionsController.postToAccount(account)
+GET     /transactions                        controllers.TransactionsController.index
+GET     /accounts/:account/transactions      controllers.TransactionsController.account(account)
+POST    /accounts/transactions               controllers.TransactionsController.post
+POST    /accounts/:account/transactions      controllers.TransactionsController.postToAccount(account)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
