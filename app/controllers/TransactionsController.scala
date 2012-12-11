@@ -35,20 +35,22 @@ object TransactionsController extends Controller {
     "amount" -> number)(TransactionForm.apply)(TransactionForm.unapply))
 
   def account(account: String) = Action {
-    Ok(views.html.accounts.index(account, accountNames, fetchRunningTotalTransactions(account)))
+    val transactions = Transaction.findTransactionsForAccount(account)
+    Ok(views.html.accounts.show(transactionForm, account, accountNames, addRunningTotal(transactions)))
   }
   
   def index = Action {
-    Ok(views.html.accounts.index("All", accountNames, fetchRunningTotalTransactions("")))
+    Ok(allTransactionsView)
+  }
+  
+  def allTransactionsView = {
+    val transactions = Transaction.findAll
+    views.html.accounts.index(accountTransactionForm, accountNames, addRunningTotal(transactions))
   } 
   
   def accountNames = Account.findAll.map(_.name).toList
 
-  def fetchRunningTotalTransactions(account: String) = {
-    val transactions =
-      if (account.isEmpty()) Transaction.findAll
-      else Transaction.findTransactionsForAccount(account)
-
+  def addRunningTotal(transactions: Iterator[Transaction]) = {
     (transactions.foldLeft(List[(Transaction, Int)]()) { (running, transaction) =>
       (running match {
         case Nil => (transaction, transaction.amount)
@@ -60,7 +62,9 @@ object TransactionsController extends Controller {
     
   def postToAccount(account: String) = Action { implicit request =>
     transactionForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("Bad Request"),
+      formWithErrors => (
+        BadRequest("oops")
+      ),
       transactionForm => {
         Transaction.save(transactionForm.build(new ObjectId, account))
         Redirect(routes.TransactionsController.account(account))

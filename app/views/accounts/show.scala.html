@@ -1,19 +1,19 @@
-@(transactionForm: Form[TransactionsController.TransactionForm], accounts: List[String], transactions: List[(Transaction, Int)])
+@(transactionForm: Form[TransactionsController.TransactionForm], account: String, accounts: List[String], transactions: List[(Transaction, Int)])
 @import helper._
 @import helper.twitterBootstrap._  
 @import views._
 @implicitField = @{ FieldConstructor(inputNoLabel.f) } 
 
-@main("All", accounts) { 
+@main(account, accounts) {
+
     <div id="transactions">
     	<table class="table table-striped"> 
     		<thead>
-	    		<tr><th>Date</th><th>Account</th><th>Memo</th><th>Category</th><th>Amount</th><th>Running Total</th></tr>
+	    		<tr><th>Date</th><th>Memo</th><th>Category</th><th>Amount</th><th>Running Total</th></tr>
 	    	</thead>
 	    	<tbody> @transactions.map{ case (transaction, total) =>
 	    		<tr>
 	    			<td>@transaction.date.format("dd MMM yyyy")</td>
-					<td>@transaction.account</td>
 	    			<td>@transaction.memo</td>
 	    			<td>@transaction.category</td>
 	    			<td>@transaction.amount</td>
@@ -24,15 +24,15 @@
     </div>
     <div id="new-transaction">
 	    <h3>New Transaction:</h3>
-	    @form(routes.TransactionsController.post) {
+	    @form(routes.TransactionsController.postToAccount(account)) {
 	    	<div class="controls controls-row input-append new-transaction">
 	    		@inputText(transactionForm("date"), 'class -> "datepicker input-small", '_showConstraints -> false, 'placeholder -> "Date")
-	    		@inputText(transactionForm("account"), '_showConstraints -> false, 'placeholder -> "Account")
 	    		@inputText(transactionForm("memo"), '_showConstraints -> false, 'placeholder -> "Memo")
 	    		@inputText(transactionForm("category"), 'class -> "input-medium", '_showConstraints -> false, 'placeholder -> "Category")
 	    		@inputText(transactionForm("amount"), 'class ->  "input-small", '_showConstraints -> false, 'placeholder -> "Amount")
 	    		<div class="control-group span"><button type="submit" class="btn btn-primary">Add</button></div>
 	    	</div>
 	    }
+	    
     </div> 
 }

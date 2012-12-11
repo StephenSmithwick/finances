@@ -18,21 +18,14 @@
     <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
-        <div class="container">
             <span class="brand">Account:</span>
-			<div class="nav-collapse collapse">
                 <ul class="nav"> 
                 	<li @if(title == "All") {class="active"}><a href="@routes.TransactionsController.index">All</a></li>
                 @accounts.map { account =>
                     <li @if(account == title) {class="active"}><a href="@routes.TransactionsController.account(account)">@account</a></li>
                 } </ul>
-        	</div>
-        </div>
     </div>
 </div>
-<br />
-<br />
-<br />
     
         @content
     </body>
