@@ -6,8 +6,9 @@
 GET     /                                    controllers.Application.index
 
 GET     /transactions                        controllers.TransactionsController.index
+POST    /transactions               		 controllers.TransactionsController.post
+
 GET     /accounts/:account/transactions      controllers.TransactionsController.account(account)
-POST    /accounts/transactions               controllers.TransactionsController.post
 POST    /accounts/:account/transactions      controllers.TransactionsController.postToAccount(account)
 
 # Map static resources from the /public folder to the /assets URL path

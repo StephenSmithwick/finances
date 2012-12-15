@@ -36,21 +36,48 @@ object TransactionsController extends Controller {
 
   def account(account: String) = Action {
     val transactions = Transaction.findTransactionsForAccount(account)
-    Ok(views.html.accounts.show(transactionForm, account, accountNames, addRunningTotal(transactions)))
+    Ok(views.html.transactions.show(transactionForm, account, accountNames, addRunningTotal(transactions)))
+  }
+  
+  def postToAccount(account: String) = Action { implicit request =>
+    transactionForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(accountView(account, formWithErrors)),
+      transactionForm => {
+        Transaction.save(transactionForm.build(new ObjectId, account))
+        Redirect(routes.TransactionsController.account(account))
+      })
+  }
+  
+  private def accountView(account: String, form: Form[TransactionForm]) = {
+    val transactions = Transaction.findTransactionsForAccount(account)
+    views.html.transactions.show(form, account, accountNames, addRunningTotal(transactions))
   }
   
   def index = Action {
-    Ok(allTransactionsView)
+    Ok(allTransactionsView(accountTransactionForm))
   }
   
-  def allTransactionsView = {
-    val transactions = Transaction.findAll
-    views.html.accounts.index(accountTransactionForm, accountNames, addRunningTotal(transactions))
-  } 
+  def post() = Action { implicit request =>
+    accountTransactionForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(allTransactionsView(formWithErrors)),
+      transactionForm => {
+        Transaction.save(transactionForm.build(new ObjectId))
+        Redirect(routes.TransactionsController.index)
+      })
+  }
   
-  def accountNames = Account.findAll.map(_.name).toList
+  private def allTransactionsView(form: Form[TransactionForm]) = {
+    val transactions = Transaction.findAll
+    views.html.transactions.index(form, accountNames, addRunningTotal(transactions))
+  }
+    
+  
 
-  def addRunningTotal(transactions: Iterator[Transaction]) = {
+  
+  
+  private def accountNames = Account.findAll.map(_.name).toList
+  
+  private def addRunningTotal(transactions: Iterator[Transaction]) = {
     (transactions.foldLeft(List[(Transaction, Int)]()) { (running, transaction) =>
       (running match {
         case Nil => (transaction, transaction.amount)
@@ -58,26 +85,4 @@ object TransactionsController extends Controller {
       }) :: running
     }).reverse
   }
-  
-    
-  def postToAccount(account: String) = Action { implicit request =>
-    transactionForm.bindFromRequest.fold(
-      formWithErrors => (
-        BadRequest("oops")
-      ),
-      transactionForm => {
-        Transaction.save(transactionForm.build(new ObjectId, account))
-        Redirect(routes.TransactionsController.account(account))
-      })
-  }
-
-  def post() = Action { implicit request =>
-    accountTransactionForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("Bad Request"),
-      transactionForm => {
-        Transaction.save(transactionForm.build(new ObjectId))
-        Redirect(routes.TransactionsController.index)
-      })
-  }
-
 }
