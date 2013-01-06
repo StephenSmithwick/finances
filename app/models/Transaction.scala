@@ -14,7 +14,7 @@ case class Transaction (
   memo: String,
   category: String,
   account: String,
-  amount: Int 
+  amount: Long 
 )
 
 object Transaction extends ModelCompanion[Transaction, ObjectId] {

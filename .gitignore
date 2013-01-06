@@ -7,3 +7,6 @@ target
 
 .classpath
 .settings
+
+.ensime
+.ensime_lucene/
